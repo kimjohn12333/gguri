@@ -34,6 +34,13 @@
 | ORCH-016 | DONE | P1 | tmux 관제에서 작업 즉시 생성 명령(예시 포함) 정리 | tmux 관제에서 작업 즉시 생성 명령(예시 포함)... 수행 완료 + 변경사항/검증결과 notes 기록 | worker:doc-1 | 2026-02-08 14:49 | - | tmux/README에 자연어 즉시 작업 생성 명령 정리 완료 |
 | ORCH-017 | DONE | P1 | run_dashboard.sh 사용법을 한글 quickstart로 정리 | run_dashboard.sh 사용법을 한글 qui... 수행 완료 + 변경사항/검증결과 notes 기록 | worker:doc-2 | 2026-02-08 14:49 | - | TMUX_QUICKSTART_KO.md 작성 및 README 링크 추가 완료 |
 | ORCH-018 | DONE | P1 | ops workers 출력을 fleet 패널에서 더 잘 보이게 문구 개선 | ops workers 출력을 fleet 패널에서 더... 수행 완료 + 변경사항/검증결과 notes 기록 | worker:ux-1 | 2026-02-08 14:49 | - | ops workers 출력에 우선순위 분포(p0/p1/p2) 추가 + fleet 문구 개선 완료 |
+| ORCH-019 | BLOCKED | P0 | [쿠팡구매/safe] 생수 2L 6개 / qty=1 / max_price=20000 / must=로켓배송 | 1) 쿠팡 후보 3개 비교(가격/배송/판매자/리뷰); 2) 제약 충족 최종 1개 선정; 3) 장바구니 담기 및 옵션/수량 확인; 4) 결제 직전 도달 후 사용자 승인 요청 | worker:coupang-1 | 2026-02-08 20:34 | - | coupang_intake:20260208-2034 mode=safe / replan:사용자 포커스 변경(72h 고도화 우선), 구매자동화 대기 |
+| ORCH-020 | BLOCKED | P0 | [쿠팡구매/safe] 키친타월 / qty=2 / must=리뷰 1천개 이상 | 1) 쿠팡 후보 3개 비교(가격/배송/판매자/리뷰); 2) 제약 충족 최종 1개 선정; 3) 장바구니 담기 및 옵션/수량 확인; 4) 결제 직전 도달 후 사용자 승인 요청 | worker:coupang-2 | 2026-02-08 20:35 | - | coupang_intake:20260208-2035 mode=safe / replan:사용자 포커스 변경(72h 고도화 우선), 구매자동화 대기 |
+| ORCH-021 | DONE | P0 | dispatcher.py 실행 엔트리포인트 구현(DB 우선, md fallback) | 1) automation/orchestrator/dispatcher.py 추가 2) PENDING 선점/owner_session 기록 3) 단위테스트 3개 이상 통과 | worker:core-1 | 2026-02-08 23:41 | 2026-02-09 12:00 | dispatcher.py 추가(DB/md pick) + test_dispatcher.py 3개 통과 |
+| ORCH-022 | DONE | P0 | watchdog.py 실행 엔트리포인트 구현(stale IN_PROGRESS 복구) | 1) automation/orchestrator/watchdog.py 추가 2) lease/stale 판정 기반 복구 3) 단위테스트 3개 이상 통과 | worker:core-2 | 2026-02-08 23:41 | 2026-02-09 18:00 | watchdog.py 추가(stale reset/retry) + test_watchdog.py 3개 통과 |
+| ORCH-023 | DONE | P0 | ops kpi 커맨드 추가(지연/성공률/재시도 집계) | 1) ops.py에 kpi 서브커맨드 2) metrics_aggregate 연계 출력 3) 테스트 2개 이상 통과 | worker:core-3 | 2026-02-08 23:42 | 2026-02-10 12:00 | ops kpi 커맨드 추가 + OPS_COMMANDS/README 반영 + test_ops kpi 스모크 포함 |
+| ORCH-024 | IN_PROGRESS | P1 | DB SSOT 전환 가드(consistency-check + md read-only 규칙) | 1) consistency-check 추가 2) README/OPS 문서 반영 3) 테스트 통과 | worker:core-4 | 2026-02-08 23:44 | 2026-02-10 18:00 | 72h:D2 |
+| ORCH-025 | PENDING | P1 | 쿠팡 워크플로우 상태머신 v1(SEARCH/CANDIDATE/CART/APPROVAL/ORDERED) | 1) 상태전이 규칙 코드화 2) safe/auto 분기 3) 테스트 통과 | - | - | 2026-02-11 18:00 | 72h:D3 |
 
 ## 작성 팁
 - 새 작업은 위 테이블에 한 줄 추가

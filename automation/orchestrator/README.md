@@ -2,8 +2,15 @@
 
 구성 요소:
 1) Queue 파일: `automation/orchestrator/QUEUE.md`
-2) Dispatcher: 주기적으로 PENDING 1개를 집어 `sessions_spawn`으로 실행
+2) Dispatcher: 주기적으로 PENDING 1개를 집어 실행
 3) Watchdog: 오래 멈춘 IN_PROGRESS를 PENDING으로 복구(선택)
+
+실행 엔트리포인트 (v2):
+- Dispatcher 1회: `python3 -m automation.orchestrator.dispatcher --db automation/orchestrator/db/queue.db --owner-session dispatcher:cron`
+- Watchdog 1회: `python3 -m automation.orchestrator.watchdog --db automation/orchestrator/db/queue.db`
+- Markdown fallback:
+  - `python3 -m automation.orchestrator.dispatcher --queue automation/orchestrator/QUEUE.md`
+  - `python3 -m automation.orchestrator.watchdog --queue automation/orchestrator/QUEUE.md --stale-minutes 60`
 
 ## 운영 규칙 (권장)
 - 동시에 여러 개를 병렬 실행하고 싶으면 row를 여러 개 두되, dispatcher는 한 tick에 1개만 집는다.
@@ -147,6 +154,7 @@ Quickstart:
 - Markdown queue status: `python3 automation/orchestrator/ops.py status`
 - SQLite queue status: `python3 automation/orchestrator/ops.py --db automation/orchestrator/db/queue.db status`
 - Worker allocation view: `python3 automation/orchestrator/ops.py workers`
+- KPI summary: `python3 automation/orchestrator/ops.py kpi`
 - Cancel/Replan/Retry: `cancel --id`, `replan --id --notes`, `retry --id`
 
 ## Reliability Layer (v1)

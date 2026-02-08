@@ -108,6 +108,23 @@ class OpsCliTests(unittest.TestCase):
         self.assertIn("workers_active=1", out)
         self.assertIn("worker-1", out)
 
+    def test_kpi_smoke(self):
+        log_path = Path(self.tmp.name) / "runs.jsonl"
+        log_path.write_text(
+            '\n'.join(
+                [
+                    '{"event":"run_end","command":"done","exit_code":0,"duration_ms":100}',
+                    '{"event":"run_end","command":"fail","exit_code":0,"duration_ms":300}',
+                ]
+            )
+            + '\n',
+            encoding="utf-8",
+        )
+        code, out = self.run_cmd(["--db", str(self.db_path), "kpi", "--log-path", str(log_path)])
+        self.assertEqual(code, 0)
+        self.assertIn("kpi", out)
+        self.assertIn("success_rate=50.00%", out)
+
     def test_retry_db_mode_respects_attempts(self):
         self._db_add(id="DB-R1", status="FAILED")
         code, out = self.run_cmd(["--db", str(self.db_path), "retry", "--id", "DB-R1"])

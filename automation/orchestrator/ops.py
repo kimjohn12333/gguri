@@ -9,7 +9,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Iterable
 
-from automation.orchestrator import config, db_store
+from automation.orchestrator import config, db_store, metrics_aggregate
 from automation.orchestrator.orch import QueueFile, now_kst_str
 
 TOP_IN_PROGRESS = config.TOP_IN_PROGRESS_DISPLAY
@@ -149,6 +149,22 @@ def cmd_workers_db(db_path: Path) -> int:
     return 0
 
 
+def cmd_kpi(log_path: Path, db_path: Path) -> int:
+    report = metrics_aggregate.aggregate_from_logs(log_path)
+    report["retry_count"] = metrics_aggregate.aggregate_retry_count_from_db(db_path)
+
+    success_rate = report.get("success_rate")
+    success_rate_text = "-" if success_rate is None else f"{success_rate * 100:.2f}%"
+    print(
+        "kpi "
+        f"success_rate={success_rate_text} "
+        f"latency_p95_ms={report.get('latency_p95_ms')} "
+        f"latency_avg_ms={report.get('latency_avg_ms')} "
+        f"retry_count={report.get('retry_count')}"
+    )
+    return 0
+
+
 def cmd_cancel_db(db_path: Path, item_id: str) -> int:
     row = _db_row(db_path, item_id)
     if row["status"] in {"DONE", "FAILED"}:
@@ -233,6 +249,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     sub.add_parser("status", help="Summary by status + top in-progress")
     sub.add_parser("workers", help="Owner-session(worker) distribution for IN_PROGRESS items")
+    kpi = sub.add_parser("kpi", help="Key operation KPI summary from logs/db")
+    kpi.add_argument("--log-path", default=str(config.LOG_PATH))
+    kpi.add_argument("--db-path")
 
     cancel = sub.add_parser("cancel", help="Cancel an active item (moves to BLOCKED)")
     cancel.add_argument("--id", required=True)
@@ -256,6 +275,9 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_status_db(db_path) if db_path else cmd_status_md(queue_path)
     if args.command == "workers":
         return cmd_workers_db(db_path) if db_path else cmd_workers_md(queue_path)
+    if args.command == "kpi":
+        target_db = Path(args.db_path) if args.db_path else (db_path if db_path else config.DB_PATH)
+        return cmd_kpi(Path(args.log_path), target_db)
     if args.command == "cancel":
         return cmd_cancel_db(db_path, args.id) if db_path else cmd_cancel_md(queue_path, args.id)
     if args.command == "replan":

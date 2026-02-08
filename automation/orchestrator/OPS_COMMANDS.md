@@ -57,6 +57,23 @@ CLI entrypoint: `python3 automation/orchestrator/ops.py`
 
 ---
 
+## `kpi`
+**Purpose**
+- 운영 KPI를 빠르게 확인 (성공률/지연 p95/평균/재시도 건수).
+
+**Inputs**
+- `--log-path <path>` (optional, default: `automation/orchestrator/logs/orch_runs.jsonl`)
+- `--db-path <path>` (optional, default: `automation/orchestrator/db/queue.db`)
+
+**Output format**
+- `kpi success_rate=<...> latency_p95_ms=<...> latency_avg_ms=<...> retry_count=<...>`
+
+**Examples**
+- `python3 automation/orchestrator/ops.py kpi`
+- `python3 automation/orchestrator/ops.py --db automation/orchestrator/db/queue.db kpi --log-path automation/orchestrator/logs/orch_runs.jsonl`
+
+---
+
 ## `cancel --id`
 **Purpose**
 - Stop operator-owned work for an active item.
