@@ -137,7 +137,13 @@ def cmd_list(qf: QueueFile, args: argparse.Namespace) -> int:
     return 0
 
 
+def _ensure_md_writable() -> None:
+    if config.QUEUE_MD_READ_ONLY:
+        raise ValueError("QUEUE.md is read-only in DB SSOT mode (set ORCH_QUEUE_MD_READ_ONLY=0 to override)")
+
+
 def cmd_add(qf: QueueFile, args: argparse.Namespace) -> int:
+    _ensure_md_writable()
     if any(r.id == args.id for r in qf.rows):
         raise ValueError(f"Row id already exists: {args.id}")
 
@@ -169,6 +175,7 @@ def _pick_candidate(rows: List[QueueRow]) -> QueueRow | None:
 
 
 def cmd_pick(qf: QueueFile, args: argparse.Namespace) -> int:
+    _ensure_md_writable()
     row = _pick_candidate(qf.rows)
     if row is None:
         print("No pending tasks")
@@ -185,6 +192,7 @@ def cmd_pick(qf: QueueFile, args: argparse.Namespace) -> int:
 
 
 def _update_terminal_status(qf: QueueFile, row_id: str, status: str, notes: str) -> int:
+    _ensure_md_writable()
     row = qf.find_by_id(row_id)
     row.status = status
     row.notes = notes.strip()

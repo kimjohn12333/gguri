@@ -39,9 +39,9 @@
 | ORCH-021 | DONE | P0 | dispatcher.py 실행 엔트리포인트 구현(DB 우선, md fallback) | 1) automation/orchestrator/dispatcher.py 추가 2) PENDING 선점/owner_session 기록 3) 단위테스트 3개 이상 통과 | worker:core-1 | 2026-02-08 23:41 | 2026-02-09 12:00 | dispatcher.py 추가(DB/md pick) + test_dispatcher.py 3개 통과 |
 | ORCH-022 | DONE | P0 | watchdog.py 실행 엔트리포인트 구현(stale IN_PROGRESS 복구) | 1) automation/orchestrator/watchdog.py 추가 2) lease/stale 판정 기반 복구 3) 단위테스트 3개 이상 통과 | worker:core-2 | 2026-02-08 23:41 | 2026-02-09 18:00 | watchdog.py 추가(stale reset/retry) + test_watchdog.py 3개 통과 |
 | ORCH-023 | DONE | P0 | ops kpi 커맨드 추가(지연/성공률/재시도 집계) | 1) ops.py에 kpi 서브커맨드 2) metrics_aggregate 연계 출력 3) 테스트 2개 이상 통과 | worker:core-3 | 2026-02-08 23:42 | 2026-02-10 12:00 | ops kpi 커맨드 추가 + OPS_COMMANDS/README 반영 + test_ops kpi 스모크 포함 |
-| ORCH-024 | IN_PROGRESS | P1 | DB SSOT 전환 가드(consistency-check + md read-only 규칙) | 1) consistency-check 추가 2) README/OPS 문서 반영 3) 테스트 통과 | worker:core-4 | 2026-02-08 23:44 | 2026-02-10 18:00 | 72h:D2 |
+| ORCH-024 | DONE | P1 | DB SSOT 전환 가드(consistency-check + md read-only 규칙) | 1) consistency-check 추가 2) README/OPS 문서 반영 3) 테스트 통과 | worker:core-4 | 2026-02-08 23:44 | 2026-02-10 18:00 | consistency-check 추가(md/db drift 검증) + ORCH_QUEUE_MD_READ_ONLY 규칙 도입 + docs 반영 |
 | ORCH-025 | BLOCKED | P1 | 쿠팡 워크플로우 상태머신 v1(SEARCH/CANDIDATE/CART/APPROVAL/ORDERED) | 1) 상태전이 규칙 코드화 2) safe/auto 분기 3) 테스트 통과 | - | - | 2026-02-11 18:00 | 72h:D3 / cancelled_by_operator |
-| ORCH-026 | PENDING | P1 | 운영 알림 규칙 추가(실패율/지연 p95/stale 감지) | 1) alert 규칙 문서화 2) CLI 출력 임계치 경고 추가 3) 테스트 통과 | - | - | 2026-02-11 18:00 | 72h:D3 replacement_for_coupang |
+| ORCH-026 | DONE | P1 | 운영 알림 규칙 추가(실패율/지연 p95/stale 감지) | 1) alert 규칙 문서화 2) CLI 출력 임계치 경고 추가 3) 테스트 통과 | worker:core-5 | 2026-02-08 23:46 | 2026-02-11 18:00 | ops kpi 임계치(alert) 추가(실패율/latency p95/stale) + fail-on-alert 옵션 + 문서/테스트 통과 |
 
 ## 작성 팁
 - 새 작업은 위 테이블에 한 줄 추가

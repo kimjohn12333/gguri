@@ -144,7 +144,9 @@ Queue productization 시작을 위해 SQLite 저장소를 추가했습니다. �
 마이그레이션:
 - `python3 automation/orchestrator/migrate_md_to_db.py --queue automation/orchestrator/QUEUE.md --db automation/orchestrator/db/queue.db`
 
-주의: 현재는 `QUEUE.md`가 계속 source of truth이며, SQLite는 보조 백엔드(v1)입니다. 명시적으로 전환하기 전까지 기존 `orch.py` 워크플로우는 그대로 유지됩니다.
+주의(전환기): 기본 워크플로우는 여전히 `QUEUE.md` 기반입니다. 다만 DB SSOT 전환 가드가 추가되어
+- `python3 automation/orchestrator/ops.py consistency-check` 로 md/db drift를 점검할 수 있고,
+- `ORCH_QUEUE_MD_READ_ONLY=1` 설정 시 `orch.py`의 상태 변경 명령(add/pick/done/fail)을 막아 read-only 규칙을 강제할 수 있습니다.
 
 ## Operator Commands (ORCH-013)
 - Command spec: `automation/orchestrator/OPS_COMMANDS.md`
@@ -154,7 +156,8 @@ Quickstart:
 - Markdown queue status: `python3 automation/orchestrator/ops.py status`
 - SQLite queue status: `python3 automation/orchestrator/ops.py --db automation/orchestrator/db/queue.db status`
 - Worker allocation view: `python3 automation/orchestrator/ops.py workers`
-- KPI summary: `python3 automation/orchestrator/ops.py kpi`
+- KPI summary/alert: `python3 automation/orchestrator/ops.py kpi --max-failure-rate 0.2 --max-latency-p95-ms 2000`
+- Consistency check (md vs db): `python3 automation/orchestrator/ops.py consistency-check`
 - Cancel/Replan/Retry: `cancel --id`, `replan --id --notes`, `retry --id`
 
 ## Reliability Layer (v1)

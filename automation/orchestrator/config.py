@@ -40,6 +40,9 @@ PRIORITY_ORDER = {"P0": 0, "P1": 1, "P2": 2}
 # === Display Settings ===
 TOP_IN_PROGRESS_DISPLAY = int(os.getenv("ORCH_TOP_IN_PROGRESS", "5"))
 
+# === Storage Mode ===
+QUEUE_MD_READ_ONLY = os.getenv("ORCH_QUEUE_MD_READ_ONLY", "0").strip().lower() in {"1", "true", "yes", "on"}
+
 
 def get_config_summary() -> dict:
     """Return current configuration as a dictionary for debugging."""
@@ -56,4 +59,5 @@ def get_config_summary() -> dict:
         "token_hard_limit": TOKEN_HARD_LIMIT,
         "dispatcher_interval_minutes": DISPATCHER_INTERVAL_MINUTES,
         "watchdog_interval_minutes": WATCHDOG_INTERVAL_MINUTES,
+        "queue_md_read_only": QUEUE_MD_READ_ONLY,
     }

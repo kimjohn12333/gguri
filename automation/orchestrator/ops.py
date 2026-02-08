@@ -6,13 +6,15 @@ from __future__ import annotations
 import argparse
 import sqlite3
 from collections import Counter
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Iterable
+from typing import Any, Iterable
 
 from automation.orchestrator import config, db_store, metrics_aggregate
 from automation.orchestrator.orch import QueueFile, now_kst_str
 
 TOP_IN_PROGRESS = config.TOP_IN_PROGRESS_DISPLAY
+KST = timezone(timedelta(hours=config.TIMEZONE_OFFSET_HOURS))
 
 
 def _append_note(existing: str, msg: str) -> str:
@@ -62,34 +64,35 @@ def _workers_summary(rows: Iterable[dict[str, str]]) -> str:
     return "\n".join(lines)
 
 
-def cmd_status_md(queue_path: Path) -> int:
+def _rows_from_md(queue_path: Path) -> list[dict[str, str]]:
     qf = QueueFile(queue_path)
-    rows = [
+    return [
         {
             "id": r.id,
             "status": r.status,
             "priority": r.priority,
+            "task": r.task,
             "owner_session": r.owner_session,
             "started_at_kst": r.started_at_kst,
+            "due_at_kst": r.due_at_kst,
+            "notes": r.notes,
         }
         for r in qf.rows
     ]
+
+
+def _rows_from_db(db_path: Path) -> list[dict[str, Any]]:
+    return db_store.list_items(db_path)
+
+
+def cmd_status_md(queue_path: Path) -> int:
+    rows = _rows_from_md(queue_path)
     print(_status_summary(rows))
     return 0
 
 
 def cmd_workers_md(queue_path: Path) -> int:
-    qf = QueueFile(queue_path)
-    rows = [
-        {
-            "id": r.id,
-            "status": r.status,
-            "priority": r.priority,
-            "owner_session": r.owner_session,
-            "started_at_kst": r.started_at_kst,
-        }
-        for r in qf.rows
-    ]
+    rows = _rows_from_md(queue_path)
     print(_workers_summary(rows))
     return 0
 
@@ -138,20 +141,93 @@ def _db_row(path: Path, item_id: str) -> dict:
 
 
 def cmd_status_db(db_path: Path) -> int:
-    rows = db_store.list_items(db_path)
+    rows = _rows_from_db(db_path)
     print(_status_summary(rows))
     return 0
 
 
 def cmd_workers_db(db_path: Path) -> int:
-    rows = db_store.list_items(db_path)
+    rows = _rows_from_db(db_path)
     print(_workers_summary(rows))
     return 0
 
 
-def cmd_kpi(log_path: Path, db_path: Path) -> int:
+def _parse_kst(s: str | None) -> datetime | None:
+    if not s or s == "-":
+        return None
+    try:
+        return datetime.strptime(s, "%Y-%m-%d %H:%M").replace(tzinfo=KST)
+    except ValueError:
+        return None
+
+
+def _count_stale_in_progress(rows: Iterable[dict[str, Any]], stale_minutes: int) -> int:
+    now = datetime.now(KST)
+    cutoff = now - timedelta(minutes=stale_minutes)
+    count = 0
+    for row in rows:
+        if row.get("status") != "IN_PROGRESS":
+            continue
+        started = _parse_kst(str(row.get("started_at_kst") or ""))
+        if started and started <= cutoff:
+            count += 1
+    return count
+
+
+def cmd_consistency_check(queue_path: Path, db_path: Path) -> int:
+    md_rows = _rows_from_md(queue_path)
+    db_rows = _rows_from_db(db_path)
+
+    md_map = {r["id"]: r for r in md_rows}
+    db_map = {str(r["id"]): r for r in db_rows}
+
+    missing_in_db = sorted(set(md_map) - set(db_map))
+    missing_in_md = sorted(set(db_map) - set(md_map))
+
+    mismatches: list[str] = []
+    fields = ["status", "priority", "owner_session", "started_at_kst", "due_at_kst"]
+    for item_id in sorted(set(md_map) & set(db_map)):
+        md = md_map[item_id]
+        db = db_map[item_id]
+        for field in fields:
+            md_val = str(md.get(field) or "")
+            db_val = str(db.get(field) or "")
+            if md_val != db_val:
+                mismatches.append(f"{item_id}:{field}:md={md_val} db={db_val}")
+
+    if not missing_in_db and not missing_in_md and not mismatches:
+        print(f"consistency ok total={len(md_map)}")
+        return 0
+
+    print(
+        "consistency mismatch "
+        f"missing_in_db={len(missing_in_db)} "
+        f"missing_in_md={len(missing_in_md)} "
+        f"field_mismatch={len(mismatches)}"
+    )
+    for item_id in missing_in_db[:20]:
+        print(f"- missing_in_db {item_id}")
+    for item_id in missing_in_md[:20]:
+        print(f"- missing_in_md {item_id}")
+    for row in mismatches[:30]:
+        print(f"- mismatch {row}")
+    return 1
+
+
+def cmd_kpi(
+    log_path: Path,
+    db_path: Path,
+    max_failure_rate: float | None,
+    max_latency_p95_ms: int | None,
+    max_stale_in_progress: int | None,
+    stale_minutes: int,
+    fail_on_alert: bool,
+) -> int:
     report = metrics_aggregate.aggregate_from_logs(log_path)
     report["retry_count"] = metrics_aggregate.aggregate_retry_count_from_db(db_path)
+
+    db_rows = _rows_from_db(db_path) if db_path.exists() else []
+    stale_in_progress = _count_stale_in_progress(db_rows, stale_minutes=stale_minutes)
 
     success_rate = report.get("success_rate")
     success_rate_text = "-" if success_rate is None else f"{success_rate * 100:.2f}%"
@@ -160,8 +236,28 @@ def cmd_kpi(log_path: Path, db_path: Path) -> int:
         f"success_rate={success_rate_text} "
         f"latency_p95_ms={report.get('latency_p95_ms')} "
         f"latency_avg_ms={report.get('latency_avg_ms')} "
-        f"retry_count={report.get('retry_count')}"
+        f"retry_count={report.get('retry_count')} "
+        f"stale_in_progress={stale_in_progress}"
     )
+
+    alerts: list[str] = []
+    if max_failure_rate is not None and success_rate is not None:
+        failure_rate = 1 - float(success_rate)
+        if failure_rate > max_failure_rate:
+            alerts.append(f"failure_rate={failure_rate:.4f} exceeds {max_failure_rate:.4f}")
+
+    p95 = report.get("latency_p95_ms")
+    if max_latency_p95_ms is not None and isinstance(p95, int) and p95 > max_latency_p95_ms:
+        alerts.append(f"latency_p95_ms={p95} exceeds {max_latency_p95_ms}")
+
+    if max_stale_in_progress is not None and stale_in_progress > max_stale_in_progress:
+        alerts.append(f"stale_in_progress={stale_in_progress} exceeds {max_stale_in_progress}")
+
+    for msg in alerts:
+        print(f"alert {msg}")
+
+    if alerts and fail_on_alert:
+        return 2
     return 0
 
 
@@ -249,9 +345,19 @@ def build_parser() -> argparse.ArgumentParser:
 
     sub.add_parser("status", help="Summary by status + top in-progress")
     sub.add_parser("workers", help="Owner-session(worker) distribution for IN_PROGRESS items")
+
+    consistency = sub.add_parser("consistency-check", help="Compare markdown queue and sqlite queue consistency")
+    consistency.add_argument("--queue-path")
+    consistency.add_argument("--db-path")
+
     kpi = sub.add_parser("kpi", help="Key operation KPI summary from logs/db")
     kpi.add_argument("--log-path", default=str(config.LOG_PATH))
     kpi.add_argument("--db-path")
+    kpi.add_argument("--max-failure-rate", type=float, default=0.2)
+    kpi.add_argument("--max-latency-p95-ms", type=int, default=2000)
+    kpi.add_argument("--max-stale-in-progress", type=int, default=0)
+    kpi.add_argument("--stale-minutes", type=int, default=60)
+    kpi.add_argument("--fail-on-alert", action="store_true")
 
     cancel = sub.add_parser("cancel", help="Cancel an active item (moves to BLOCKED)")
     cancel.add_argument("--id", required=True)
@@ -275,9 +381,21 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_status_db(db_path) if db_path else cmd_status_md(queue_path)
     if args.command == "workers":
         return cmd_workers_db(db_path) if db_path else cmd_workers_md(queue_path)
+    if args.command == "consistency-check":
+        check_queue = Path(args.queue_path) if args.queue_path else queue_path
+        check_db = Path(args.db_path) if args.db_path else (db_path if db_path else config.DB_PATH)
+        return cmd_consistency_check(check_queue, check_db)
     if args.command == "kpi":
         target_db = Path(args.db_path) if args.db_path else (db_path if db_path else config.DB_PATH)
-        return cmd_kpi(Path(args.log_path), target_db)
+        return cmd_kpi(
+            Path(args.log_path),
+            target_db,
+            max_failure_rate=args.max_failure_rate,
+            max_latency_p95_ms=args.max_latency_p95_ms,
+            max_stale_in_progress=args.max_stale_in_progress,
+            stale_minutes=args.stale_minutes,
+            fail_on_alert=args.fail_on_alert,
+        )
     if args.command == "cancel":
         return cmd_cancel_db(db_path, args.id) if db_path else cmd_cancel_md(queue_path, args.id)
     if args.command == "replan":

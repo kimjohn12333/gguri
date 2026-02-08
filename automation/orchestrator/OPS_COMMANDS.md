@@ -45,7 +45,7 @@ CLI entrypoint: `python3 automation/orchestrator/ops.py`
 
 **Output format**
 - Line 1: `workers_active=<n> in_progress=<m>`
-- Next lines: `- <owner_session> tasks=<k> ids=<id1,id2,...> oldest_start=<time>`
+- Next lines: `- <owner_session> tasks=<k> p0=<a> p1=<b> p2=<c> ids=<id1,id2,...> oldest_start=<time>`
 - 항목이 없으면: `workers: none`
 
 **Safety checks**
@@ -57,20 +57,45 @@ CLI entrypoint: `python3 automation/orchestrator/ops.py`
 
 ---
 
+## `consistency-check`
+**Purpose**
+- `QUEUE.md`와 SQLite queue 상태가 일치하는지 검증.
+- DB SSOT 전환 시 drift를 조기 발견.
+
+**Inputs**
+- `--queue-path <path>` (optional, default: `--queue` 값)
+- `--db-path <path>` (optional, default: `--db` 또는 기본 DB 경로)
+
+**Output format**
+- 일치: `consistency ok total=<n>`
+- 불일치: `consistency mismatch missing_in_db=<a> missing_in_md=<b> field_mismatch=<c>` + 상세 라인
+
+**Examples**
+- `python3 automation/orchestrator/ops.py consistency-check`
+- `python3 automation/orchestrator/ops.py consistency-check --queue-path automation/orchestrator/QUEUE.md --db-path automation/orchestrator/db/queue.db`
+
+---
+
 ## `kpi`
 **Purpose**
-- 운영 KPI를 빠르게 확인 (성공률/지연 p95/평균/재시도 건수).
+- 운영 KPI를 빠르게 확인 (성공률/지연 p95/평균/재시도/stale).
 
 **Inputs**
 - `--log-path <path>` (optional, default: `automation/orchestrator/logs/orch_runs.jsonl`)
 - `--db-path <path>` (optional, default: `automation/orchestrator/db/queue.db`)
+- `--max-failure-rate <float>` (default: `0.2`)
+- `--max-latency-p95-ms <int>` (default: `2000`)
+- `--max-stale-in-progress <int>` (default: `0`)
+- `--stale-minutes <int>` (default: `60`)
+- `--fail-on-alert` (optional, alert 발생 시 exit code 2)
 
 **Output format**
-- `kpi success_rate=<...> latency_p95_ms=<...> latency_avg_ms=<...> retry_count=<...>`
+- `kpi success_rate=<...> latency_p95_ms=<...> latency_avg_ms=<...> retry_count=<...> stale_in_progress=<...>`
+- 임계치 초과 시: `alert ...` 라인 추가
 
 **Examples**
 - `python3 automation/orchestrator/ops.py kpi`
-- `python3 automation/orchestrator/ops.py --db automation/orchestrator/db/queue.db kpi --log-path automation/orchestrator/logs/orch_runs.jsonl`
+- `python3 automation/orchestrator/ops.py kpi --max-failure-rate 0.1 --max-latency-p95-ms 1500 --fail-on-alert`
 
 ---
 

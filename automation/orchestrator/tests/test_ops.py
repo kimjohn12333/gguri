@@ -1,4 +1,5 @@
 import io
+import sqlite3
 import tempfile
 import unittest
 from contextlib import redirect_stdout
@@ -108,6 +109,26 @@ class OpsCliTests(unittest.TestCase):
         self.assertIn("workers_active=1", out)
         self.assertIn("worker-1", out)
 
+    def test_consistency_check_ok(self):
+        db_store.add_item(self.db_path, id="ORCH-100", priority="P1", task="task one", success_criteria="c1")
+        db_store.add_item(self.db_path, id="ORCH-101", priority="P0", task="task zero", success_criteria="c2")
+        db_store.add_item(self.db_path, id="ORCH-102", priority="P2", task="task two", success_criteria="c3")
+        db_store.mark_failed(self.db_path, "ORCH-101", "err")
+        with sqlite3.connect(self.db_path) as conn:
+            conn.execute(
+                "UPDATE queue_items SET status='IN_PROGRESS', owner_session='s1', started_at_kst='2026-01-01 10:00' WHERE id='ORCH-102'"
+            )
+
+        code, out = self.run_cmd([
+            "--queue",
+            str(self.queue_path),
+            "consistency-check",
+            "--db-path",
+            str(self.db_path),
+        ])
+        self.assertEqual(code, 0)
+        self.assertIn("consistency ok", out)
+
     def test_kpi_smoke(self):
         log_path = Path(self.tmp.name) / "runs.jsonl"
         log_path.write_text(
@@ -120,10 +141,41 @@ class OpsCliTests(unittest.TestCase):
             + '\n',
             encoding="utf-8",
         )
-        code, out = self.run_cmd(["--db", str(self.db_path), "kpi", "--log-path", str(log_path)])
+        code, out = self.run_cmd([
+            "--db",
+            str(self.db_path),
+            "kpi",
+            "--log-path",
+            str(log_path),
+            "--max-failure-rate",
+            "0.6",
+            "--max-latency-p95-ms",
+            "1000",
+        ])
         self.assertEqual(code, 0)
         self.assertIn("kpi", out)
         self.assertIn("success_rate=50.00%", out)
+
+    def test_kpi_fail_on_alert(self):
+        log_path = Path(self.tmp.name) / "runs2.jsonl"
+        log_path.write_text(
+            '{"event":"run_end","command":"fail","exit_code":0,"duration_ms":9999}\n',
+            encoding="utf-8",
+        )
+        code, out = self.run_cmd([
+            "--db",
+            str(self.db_path),
+            "kpi",
+            "--log-path",
+            str(log_path),
+            "--max-failure-rate",
+            "0.1",
+            "--max-latency-p95-ms",
+            "100",
+            "--fail-on-alert",
+        ])
+        self.assertEqual(code, 2)
+        self.assertIn("alert", out)
 
     def test_retry_db_mode_respects_attempts(self):
         self._db_add(id="DB-R1", status="FAILED")

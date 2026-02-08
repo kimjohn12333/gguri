@@ -3,6 +3,7 @@ import tempfile
 import unittest
 from contextlib import redirect_stdout
 from pathlib import Path
+from unittest.mock import patch
 
 from automation.orchestrator import orch
 
@@ -127,6 +128,22 @@ class OrchCliTests(unittest.TestCase):
         self.run_cmd(["done", "--id", "ORCH-100", "--notes", "line | with pipe"])
         text = self.queue_path.read_text(encoding="utf-8")
         self.assertIn("line / with pipe", text)
+
+    def test_md_read_only_blocks_mutation(self):
+        with patch("automation.orchestrator.orch.config.QUEUE_MD_READ_ONLY", True):
+            code, out = self.run_cmd([
+                "add",
+                "--id",
+                "ORCH-300",
+                "--priority",
+                "P1",
+                "--task",
+                "blocked",
+                "--success-criteria",
+                "blocked",
+            ])
+        self.assertEqual(code, 1)
+        self.assertIn("read-only", out)
 
 
 if __name__ == "__main__":
