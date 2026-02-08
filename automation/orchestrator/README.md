@@ -50,6 +50,20 @@
 - `done`/`fail`은 notes 입력을 강제해 사후 분석 가능성 확보
 - 셀 내 `|` 문자는 `/`로 치환해 markdown 테이블 파손 방지
 
+## Natural Intake CLI (MVP)
+자연어 요청 1줄을 큐 row 여러 개로 분해해 추가하는 진입점입니다.
+
+- 미리보기(큐 미반영):
+  `python3 -m automation.orchestrator.nl_intake plan --request "로그 정리, 재시도 보강, 문서 업데이트" --parallel 3`
+- 큐 반영:
+  `python3 -m automation.orchestrator.nl_intake submit --request "로그 정리, 재시도 보강, 문서 업데이트" --parallel 3 --priority P1`
+
+동작 요약:
+- bullet/번호 목록 입력이면 항목 단위로 분해
+- 구분자(, ; 그리고 및 / ->)가 있으면 분해
+- 분해가 어려우면 `설계 -> 구현 -> 검증` 3단계 템플릿으로 생성
+- 생성 row는 `notes`에 `nl_intake:<timestamp>` 태그를 남김
+
 ## Team Mode (MVP)
 Lead 1 + Worker 3 구조로 하위 작업을 병렬 처리하는 모드입니다.
 상세 규칙은 `automation/orchestrator/TEAM_MODE.md`를 참고하세요.
