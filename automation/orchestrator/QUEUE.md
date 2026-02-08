@@ -42,6 +42,9 @@
 | ORCH-024 | DONE | P1 | DB SSOT 전환 가드(consistency-check + md read-only 규칙) | 1) consistency-check 추가 2) README/OPS 문서 반영 3) 테스트 통과 | worker:core-4 | 2026-02-08 23:44 | 2026-02-10 18:00 | consistency-check 추가(md/db drift 검증) + ORCH_QUEUE_MD_READ_ONLY 규칙 도입 + docs 반영 |
 | ORCH-025 | BLOCKED | P1 | 쿠팡 워크플로우 상태머신 v1(SEARCH/CANDIDATE/CART/APPROVAL/ORDERED) | 1) 상태전이 규칙 코드화 2) safe/auto 분기 3) 테스트 통과 | - | - | 2026-02-11 18:00 | 72h:D3 / cancelled_by_operator |
 | ORCH-026 | DONE | P1 | 운영 알림 규칙 추가(실패율/지연 p95/stale 감지) | 1) alert 규칙 문서화 2) CLI 출력 임계치 경고 추가 3) 테스트 통과 | worker:core-5 | 2026-02-08 23:46 | 2026-02-11 18:00 | ops kpi 임계치(alert) 추가(실패율/latency p95/stale) + fail-on-alert 옵션 + 문서/테스트 통과 |
+| ORCH-027 | IN_PROGRESS | P0 | DB->QUEUE.md 렌더러 추가(읽기전용 뷰 생성) | 1) render_queue_md.py 추가 2) db 기준으로 QUEUE.md 재생성 3) 테스트 3개 이상 | worker:core-6 | 2026-02-08 23:53 | 2026-02-10 18:00 | 72h:phase2 |
+| ORCH-028 | IN_PROGRESS | P1 | consistency-check 자동화 스크립트/운영 절차 추가 | 1) check 스크립트 추가 2) mismatch 시 exit code/경고 표준화 3) 문서+테스트 통과 | worker:core-7 | 2026-02-08 23:53 | 2026-02-11 12:00 | 72h:phase2 |
+| ORCH-029 | IN_PROGRESS | P0 | 1시간 이상 운영 soak check 실행(상태/일관성/KPI 감시) | 1) 60분+ 연속 점검 로그 생성 2) consistency-check mismatch 0 3) kpi alert 없음 | worker:qa-1 | 2026-02-08 23:55 | 2026-02-09 01:00 | 1h soak FAIL log=/Users/jm/.openclaw/workspace/automation/orchestrator/logs/soak/soak_1h_20260208-235422.log / retry_requested |
 
 ## 작성 팁
 - 새 작업은 위 테이블에 한 줄 추가
