@@ -12,9 +12,11 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import List, Tuple
 
-KST = timezone(timedelta(hours=9))
-PRIORITY_ORDER = {"P0": 0, "P1": 1, "P2": 2}
-DEFAULT_LOG_PATH = Path("automation/orchestrator/logs/orch_runs.jsonl")
+from automation.orchestrator import config
+
+KST = timezone(timedelta(hours=config.TIMEZONE_OFFSET_HOURS))
+PRIORITY_ORDER = config.PRIORITY_ORDER
+DEFAULT_LOG_PATH = config.LOG_PATH
 
 
 @dataclasses.dataclass

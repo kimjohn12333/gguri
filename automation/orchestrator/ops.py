@@ -9,10 +9,10 @@ from collections import Counter
 from pathlib import Path
 from typing import Iterable
 
-from automation.orchestrator import db_store
+from automation.orchestrator import config, db_store
 from automation.orchestrator.orch import QueueFile, now_kst_str
 
-TOP_IN_PROGRESS = 5
+TOP_IN_PROGRESS = config.TOP_IN_PROGRESS_DISPLAY
 
 
 def _append_note(existing: str, msg: str) -> str:

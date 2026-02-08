@@ -6,9 +6,11 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
-KST = timezone(timedelta(hours=9))
-PRIORITY_ORDER = {"P0": 0, "P1": 1, "P2": 2}
-RETRY_BACKOFF_SECONDS = (60, 180, 600)
+from automation.orchestrator import config
+
+KST = timezone(timedelta(hours=config.TIMEZONE_OFFSET_HOURS))
+PRIORITY_ORDER = config.PRIORITY_ORDER
+RETRY_BACKOFF_SECONDS = config.RETRY_BACKOFF_SECONDS
 
 
 def now_kst_str() -> str:

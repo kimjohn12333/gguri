@@ -114,3 +114,23 @@
 {"command": "done", "duration_ms": 0, "event": "run_end", "exit_code": 0, "item_id": "ORCH-100", "status": "ok", "trace_id": "trace-2180c87180ea", "ts_epoch_ms": 1770475350800, "ts_kst": "2026-02-07T23:42:30+09:00"}
 {"command": "pick", "event": "run_start", "trace_id": "trace-ec86a01aaa8d", "ts_epoch_ms": 1770475350800, "ts_kst": "2026-02-07T23:42:30+09:00"}
 {"command": "pick", "duration_ms": 0, "event": "run_end", "exit_code": 0, "item_id": "ORCH-101", "status": "ok", "trace_id": "trace-ec86a01aaa8d", "ts_epoch_ms": 1770475350801, "ts_kst": "2026-02-07T23:42:30+09:00"}
+{"command": "add", "event": "run_start", "trace_id": "trace-fa0ccec1dee9", "ts_epoch_ms": 1770512220422, "ts_kst": "2026-02-08T09:57:00+09:00"}
+{"command": "add", "duration_ms": 0, "error": "Row id already exists: ORCH-100", "event": "run_end", "exit_code": 1, "item_id": null, "status": "error", "trace_id": "trace-fa0ccec1dee9", "ts_epoch_ms": 1770512220422, "ts_kst": "2026-02-08T09:57:00+09:00"}
+{"command": "add", "event": "run_start", "trace_id": "trace-86e08355113d", "ts_epoch_ms": 1770512220424, "ts_kst": "2026-02-08T09:57:00+09:00"}
+{"command": "add", "duration_ms": 0, "event": "run_end", "exit_code": 0, "item_id": "ORCH-200", "status": "ok", "trace_id": "trace-86e08355113d", "ts_epoch_ms": 1770512220424, "ts_kst": "2026-02-08T09:57:00+09:00"}
+{"command": "done", "event": "run_start", "trace_id": "trace-49b5f8143c8f", "ts_epoch_ms": 1770512220425, "ts_kst": "2026-02-08T09:57:00+09:00"}
+{"command": "done", "duration_ms": 0, "error": "Row id not found: ORCH-999", "event": "run_end", "exit_code": 1, "item_id": "ORCH-999", "status": "error", "trace_id": "trace-49b5f8143c8f", "ts_epoch_ms": 1770512220425, "ts_kst": "2026-02-08T09:57:00+09:00"}
+{"command": "done", "event": "run_start", "trace_id": "trace-bce1d2b17b55", "ts_epoch_ms": 1770512220426, "ts_kst": "2026-02-08T09:57:00+09:00"}
+{"command": "done", "duration_ms": 0, "event": "run_end", "exit_code": 0, "item_id": "ORCH-102", "status": "ok", "trace_id": "trace-bce1d2b17b55", "ts_epoch_ms": 1770512220427, "ts_kst": "2026-02-08T09:57:00+09:00"}
+{"command": "fail", "event": "run_start", "trace_id": "trace-026ee8c20fa5", "ts_epoch_ms": 1770512220428, "ts_kst": "2026-02-08T09:57:00+09:00"}
+{"command": "fail", "duration_ms": 0, "event": "run_end", "exit_code": 0, "item_id": "ORCH-100", "status": "ok", "trace_id": "trace-026ee8c20fa5", "ts_epoch_ms": 1770512220428, "ts_kst": "2026-02-08T09:57:00+09:00"}
+{"command": "list", "event": "run_start", "trace_id": "trace-83f7076ed76e", "ts_epoch_ms": 1770512220430, "ts_kst": "2026-02-08T09:57:00+09:00"}
+{"command": "list", "duration_ms": 0, "event": "run_end", "exit_code": 0, "item_id": null, "status": "ok", "trace_id": "trace-83f7076ed76e", "ts_epoch_ms": 1770512220430, "ts_kst": "2026-02-08T09:57:00+09:00"}
+{"command": "pick", "event": "run_start", "trace_id": "trace-d433985d1d1b", "ts_epoch_ms": 1770512220432, "ts_kst": "2026-02-08T09:57:00+09:00"}
+{"command": "pick", "duration_ms": 0, "event": "run_end", "exit_code": 0, "item_id": null, "status": "ok", "trace_id": "trace-d433985d1d1b", "ts_epoch_ms": 1770512220433, "ts_kst": "2026-02-08T09:57:00+09:00"}
+{"command": "pick", "event": "run_start", "trace_id": "trace-33568f7dc2cd", "ts_epoch_ms": 1770512220434, "ts_kst": "2026-02-08T09:57:00+09:00"}
+{"command": "pick", "duration_ms": 0, "event": "run_end", "exit_code": 0, "item_id": "ORCH-101", "status": "ok", "trace_id": "trace-33568f7dc2cd", "ts_epoch_ms": 1770512220434, "ts_kst": "2026-02-08T09:57:00+09:00"}
+{"command": "done", "event": "run_start", "trace_id": "trace-e30835d180f7", "ts_epoch_ms": 1770512220435, "ts_kst": "2026-02-08T09:57:00+09:00"}
+{"command": "done", "duration_ms": 0, "event": "run_end", "exit_code": 0, "item_id": "ORCH-100", "status": "ok", "trace_id": "trace-e30835d180f7", "ts_epoch_ms": 1770512220435, "ts_kst": "2026-02-08T09:57:00+09:00"}
+{"command": "pick", "event": "run_start", "trace_id": "trace-86196ab2dac0", "ts_epoch_ms": 1770512220437, "ts_kst": "2026-02-08T09:57:00+09:00"}
+{"command": "pick", "duration_ms": 0, "event": "run_end", "exit_code": 0, "item_id": "ORCH-101", "status": "ok", "trace_id": "trace-86196ab2dac0", "ts_epoch_ms": 1770512220437, "ts_kst": "2026-02-08T09:57:00+09:00"}
