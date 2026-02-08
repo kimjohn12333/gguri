@@ -148,6 +148,10 @@ Queue productization 시작을 위해 SQLite 저장소를 추가했습니다. �
 - `python3 automation/orchestrator/ops.py consistency-check` 로 md/db drift를 점검할 수 있고,
 - `ORCH_QUEUE_MD_READ_ONLY=1` 설정 시 `orch.py`의 상태 변경 명령(add/pick/done/fail)을 막아 read-only 규칙을 강제할 수 있습니다.
 
+DB -> Markdown 뷰 렌더링:
+- `python3 -m automation.orchestrator.render_queue_md --db automation/orchestrator/db/queue.db --queue automation/orchestrator/QUEUE.md`
+- 운영 권장: DB를 실제 소스로 유지하고, `QUEUE.md`는 뷰로 재생성
+
 ## Operator Commands (ORCH-013)
 - Command spec: `automation/orchestrator/OPS_COMMANDS.md`
 - CLI: `automation/orchestrator/ops.py`
@@ -158,6 +162,7 @@ Quickstart:
 - Worker allocation view: `python3 automation/orchestrator/ops.py workers`
 - KPI summary/alert: `python3 automation/orchestrator/ops.py kpi --max-failure-rate 0.2 --max-latency-p95-ms 2000`
 - Consistency check (md vs db): `python3 automation/orchestrator/ops.py consistency-check`
+- One-shot health check (standard exit codes): `automation/orchestrator/check_consistency.sh`
 - Cancel/Replan/Retry: `cancel --id`, `replan --id --notes`, `retry --id`
 
 ## Reliability Layer (v1)

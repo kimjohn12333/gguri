@@ -40,6 +40,7 @@ gguri = "automation.orchestrator.orch:main"
 gguri-ops = "automation.orchestrator.ops:main"
 gguri-intake = "automation.orchestrator.nl_intake:main"
 gguri-coupang = "automation.orchestrator.coupang_intake:main"
+gguri-render = "automation.orchestrator.render_queue_md:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
