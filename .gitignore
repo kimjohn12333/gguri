@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+.pytest_cache/
+*.pyc
+
+# Virtual envs
+.venv/
+venv/
+
+# Runtime logs / artifacts
+automation/orchestrator/logs/*.jsonl
+!automation/orchestrator/logs/.gitkeep
+
+# Local temp
+tmp/
