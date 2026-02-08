@@ -45,6 +45,8 @@
 | ORCH-027 | DONE | P0 | DB->QUEUE.md 렌더러 추가(읽기전용 뷰 생성) | 1) render_queue_md.py 추가 2) db 기준으로 QUEUE.md 재생성 3) 테스트 3개 이상 | worker:core-6 | 2026-02-08 23:53 | 2026-02-10 18:00 | render_queue_md.py 추가(DB->QUEUE.md 뷰 렌더) + test_render_queue_md 통과 |
 | ORCH-028 | DONE | P1 | consistency-check 자동화 스크립트/운영 절차 추가 | 1) check 스크립트 추가 2) mismatch 시 exit code/경고 표준화 3) 문서+테스트 통과 | worker:core-7 | 2026-02-08 23:53 | 2026-02-11 12:00 | check_consistency.sh 추가(표준 exit code 0/10/20/30) + test_check_consistency_script 통과 |
 | ORCH-029 | DONE | P0 | 1시간 이상 운영 soak check 실행(상태/일관성/KPI 감시) | 1) 60분+ 연속 점검 로그 생성 2) consistency-check mismatch 0 3) kpi alert 없음 | worker:qa-1 | 2026-02-08 23:55 | 2026-02-09 01:00 | 1h soak PASS log=automation/orchestrator/logs/soak/soak_1h_20260208-235522.log |
+| ORCH-030 | DONE | P0 | cron dispatcher/watchdog를 CLI 엔트리포인트 기반으로 전환 | 1) dispatcher cron이 dispatcher.py 호출 2) watchdog cron이 watchdog.py 호출 3) 실패시 원인 텍스트 출력 | worker:ops-1 | 2026-02-09 01:11 | 2026-02-09 02:30 | dispatcher/watchdog cron payload을 dispatcher.py/watchdog.py+render+healthcheck CLI 기반으로 전환 완료 |
+| ORCH-031 | DONE | P1 | 07:10 오버나이트 요약 배달 cron 구성 | 1) one-shot cron 등록 2) 요약 항목(상태/DONE/BLOCKED/health/next) 포함 | - | - | 2026-02-09 07:10 | one-shot summary cron 등록 완료(job=cd8db407-6639-4c69-b3e4-f5e01b134278) |
 
 ## 작성 팁
 - 새 작업은 위 테이블에 한 줄 추가
