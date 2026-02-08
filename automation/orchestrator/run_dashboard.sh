@@ -56,10 +56,10 @@ start_session() {
 
   # Window 1: fleet overview (worker allocation / pending / logs)
   tmux -S "$SOCKET" new-window -t "$SESSION" -n fleet \
-    "cd '$WORKDIR'; while true; do clear; date; echo '=== WORKER OVERVIEW ==='; python3 -m automation.orchestrator.ops status; sleep 2; done"
+    "cd '$WORKDIR'; while true; do clear; date; echo '=== WORKER OVERVIEW (status) ==='; python3 -m automation.orchestrator.ops status; sleep 2; done"
 
   tmux -S "$SOCKET" split-window -h -t "$SESSION":fleet \
-    "cd '$WORKDIR'; while true; do clear; echo '=== WORKER ALLOCATION (owner_session) ==='; python3 -m automation.orchestrator.ops workers; sleep 2; done"
+    "cd '$WORKDIR'; while true; do clear; echo '=== WHO IS DOING WHAT (owner_session) ==='; python3 -m automation.orchestrator.ops workers; sleep 2; done"
 
   tmux -S "$SOCKET" split-window -v -t "$SESSION":fleet.0 \
     "cd '$WORKDIR'; while true; do clear; echo '=== PENDING TOP ==='; python3 -m automation.orchestrator.orch list --status PENDING | head -n 20; sleep 3; done"

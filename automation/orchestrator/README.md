@@ -75,6 +75,9 @@
 팁:
 - tmux 내부에서 실행 중이어도 `attach/fleet`는 자동으로 중첩 경고를 피하도록 동작합니다.
 - 키 조작: `Ctrl+b` 후 `n`(다음 창), `p`(이전 창), `d`(detach)
+- 즉시 작업 생성(자연어):
+  `python3 -m automation.orchestrator.nl_intake submit --request "작업A, 작업B, 작업C" --parallel 3 --priority P1`
+- 한글 빠른 안내: `automation/orchestrator/TMUX_QUICKSTART_KO.md`
 
 ## Team Mode (MVP)
 Lead 1 + Worker 3 구조로 하위 작업을 병렬 처리하는 모드입니다.

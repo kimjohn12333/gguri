@@ -31,6 +31,9 @@
 | ORCH-013 | DONE | P1 | 운영 명령 인터페이스(status/cancel/replan/retry) 정비 | 1) 명령 스펙 문서화 2) 최소 CLI 진입점 구현 3) runbook에 운영 절차 반영 | agent:main:subagent:b5091a31-5f83-401c-a320-3dd464f3d626 | 2026-02-07 23:37 | 2026-02-08 04:00 | Added ops.py/OPS_COMMANDS.md with status-cancel-replan-retry for markdown+sqlite; updated runbook/README and added deterministic ops CLI tests (suite passing). |
 | ORCH-014 | DONE | P1 | 제품화 테스트 매트릭스+soak test 설계 | 1) 단위/통합/E2E/장시간 테스트 목록 2) 실패 시나리오 5개 이상 3) 릴리즈 체크리스트 작성 | agent:main:subagent:cf2193bc-b4e0-48cd-a9cd-141c8e3975a7 | 2026-02-07 23:39 | 2026-02-08 05:00 | 제품화 테스트 전략/매트릭스/soak plan 문서 추가 및 README 실행순서 반영 완료. python3 -m pytest automation/orchestrator/tests -q 실행(38 passed)으로 회귀 이상 없음 확인. |
 | ORCH-015 | DONE | P0 | Reviewer Gate 자동 검토/재시도 루프 도입 | 1) reviewer_gate.py 구현(판정 PASS/RETRY/BLOCK) 2) 실행 결과 기반 자동 재큐잉 로직 추가 3) README/정책 문서에 운영 플로우 반영 | agent:main:subagent:cbb451c1-e50e-4350-91e3-c0d135a4ea4d | 2026-02-07 23:53 | 2026-02-08 02:00 | Implemented reviewer_gate + review_and_route (md/sqlite), added policy/docs, added deterministic tests for pass/retry/block and routing; full orchestrator test suite green (45 passed). |
+| ORCH-016 | DONE | P1 | tmux 관제에서 작업 즉시 생성 명령(예시 포함) 정리 | tmux 관제에서 작업 즉시 생성 명령(예시 포함)... 수행 완료 + 변경사항/검증결과 notes 기록 | worker:doc-1 | 2026-02-08 14:49 | - | tmux/README에 자연어 즉시 작업 생성 명령 정리 완료 |
+| ORCH-017 | DONE | P1 | run_dashboard.sh 사용법을 한글 quickstart로 정리 | run_dashboard.sh 사용법을 한글 qui... 수행 완료 + 변경사항/검증결과 notes 기록 | worker:doc-2 | 2026-02-08 14:49 | - | TMUX_QUICKSTART_KO.md 작성 및 README 링크 추가 완료 |
+| ORCH-018 | DONE | P1 | ops workers 출력을 fleet 패널에서 더 잘 보이게 문구 개선 | ops workers 출력을 fleet 패널에서 더... 수행 완료 + 변경사항/검증결과 notes 기록 | worker:ux-1 | 2026-02-08 14:49 | - | ops workers 출력에 우선순위 분포(p0/p1/p2) 추가 + fleet 문구 개선 완료 |
 
 ## 작성 팁
 - 새 작업은 위 테이블에 한 줄 추가

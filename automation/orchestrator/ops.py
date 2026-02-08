@@ -55,7 +55,10 @@ def _workers_summary(rows: Iterable[dict[str, str]]) -> str:
         tasks = grouped[owner]
         ids = ",".join(r["id"] for r in tasks)
         oldest = next((r.get("started_at_kst", "-") for r in tasks if r.get("started_at_kst") and r.get("started_at_kst") != "-"), "-")
-        lines.append(f"- {owner} tasks={len(tasks)} ids={ids} oldest_start={oldest}")
+        priorities = Counter((r.get("priority") or "P2") for r in tasks)
+        lines.append(
+            f"- {owner} tasks={len(tasks)} p0={priorities.get('P0', 0)} p1={priorities.get('P1', 0)} p2={priorities.get('P2', 0)} ids={ids} oldest_start={oldest}"
+        )
     return "\n".join(lines)
 
 
