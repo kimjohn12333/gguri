@@ -39,6 +39,7 @@ dev = [
 gguri = "automation.orchestrator.orch:main"
 gguri-ops = "automation.orchestrator.ops:main"
 gguri-intake = "automation.orchestrator.nl_intake:main"
+gguri-coupang = "automation.orchestrator.coupang_intake:main"
 
 [tool.setuptools.packages.find]
 where = ["."]

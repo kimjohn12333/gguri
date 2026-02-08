@@ -23,6 +23,17 @@ python3 -m automation.orchestrator.nl_intake submit \
   --priority P1
 ```
 
+## 2-1) 쿠팡 구매 흐름 넣기 (컨트롤 쉘에서)
+```bash
+python3 -m automation.orchestrator.coupang_intake submit \
+  --request "생수 2L 6개" \
+  --mode safe \
+  --must-have 로켓배송 \
+  --max-price 20000
+```
+- safe: 결제 직전 승인 대기
+- auto: 인증 가능 시 주문완료까지 진행
+
 ## 3) 진행 확인
 ```bash
 python3 -m automation.orchestrator.ops status

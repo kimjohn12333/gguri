@@ -64,6 +64,18 @@
 - 분해가 어려우면 `설계 -> 구현 -> 검증` 3단계 템플릿으로 생성
 - 생성 row는 `notes`에 `nl_intake:<timestamp>` 태그를 남김
 
+## Coupang 구매 Intake (MVP)
+쿠팡 구매 요청을 **끊김 없이 1개 워커 태스크**로 실행하도록 큐에 등록합니다.
+
+- 미리보기:
+  `python3 -m automation.orchestrator.coupang_intake plan --request "생수 2L 6개" --mode safe --must-have 로켓배송 --max-price 20000`
+- 큐 반영:
+  `python3 -m automation.orchestrator.coupang_intake submit --request "생수 2L 6개" --mode safe --must-have 로켓배송 --max-price 20000`
+
+모드:
+- `safe`(기본): 결제 직전에서 사용자 승인 요청
+- `auto`: 인증 가능 시 주문 완료까지 진행(주문번호 기록)
+
 ## tmux Dashboard (관제)
 원클릭으로 관제화면(오케스트레이터 + fleet)을 띄웁니다.
 

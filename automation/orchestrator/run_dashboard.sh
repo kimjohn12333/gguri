@@ -43,6 +43,7 @@ start_session() {
      echo '자주 쓰는 명령:'; \
      echo '  python3 -m automation.orchestrator.ops status'; \
      echo '  python3 -m automation.orchestrator.nl_intake submit --request \"로그 정리, 재시도 보강, 문서 업데이트\" --parallel 3'; \
+     echo '  python3 -m automation.orchestrator.coupang_intake submit --request \"생수 2L 6개\" --mode safe --must-have 로켓배송 --max-price 20000'; \
      echo '  python3 -m automation.orchestrator.orch add --id ORCH-016 --priority P1 --task \"...\" --success-criteria \"...\"'; \
      echo '  python3 -m automation.orchestrator.ops retry --id ORCH-016'; \
      echo '  python3 -m automation.orchestrator.ops cancel --id ORCH-016'; \
