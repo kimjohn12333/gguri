@@ -39,6 +39,26 @@ def _status_summary(rows: Iterable[dict[str, str]]) -> str:
     return "\n".join(lines)
 
 
+def _workers_summary(rows: Iterable[dict[str, str]]) -> str:
+    rows = list(rows)
+    in_progress = [r for r in rows if r["status"] == "IN_PROGRESS"]
+    if not in_progress:
+        return "workers: none"
+
+    grouped: dict[str, list[dict[str, str]]] = {}
+    for row in in_progress:
+        owner = row.get("owner_session") or "-"
+        grouped.setdefault(owner, []).append(row)
+
+    lines = [f"workers_active={len(grouped)} in_progress={len(in_progress)}"]
+    for owner in sorted(grouped):
+        tasks = grouped[owner]
+        ids = ",".join(r["id"] for r in tasks)
+        oldest = next((r.get("started_at_kst", "-") for r in tasks if r.get("started_at_kst") and r.get("started_at_kst") != "-"), "-")
+        lines.append(f"- {owner} tasks={len(tasks)} ids={ids} oldest_start={oldest}")
+    return "\n".join(lines)
+
+
 def cmd_status_md(queue_path: Path) -> int:
     qf = QueueFile(queue_path)
     rows = [
@@ -52,6 +72,22 @@ def cmd_status_md(queue_path: Path) -> int:
         for r in qf.rows
     ]
     print(_status_summary(rows))
+    return 0
+
+
+def cmd_workers_md(queue_path: Path) -> int:
+    qf = QueueFile(queue_path)
+    rows = [
+        {
+            "id": r.id,
+            "status": r.status,
+            "priority": r.priority,
+            "owner_session": r.owner_session,
+            "started_at_kst": r.started_at_kst,
+        }
+        for r in qf.rows
+    ]
+    print(_workers_summary(rows))
     return 0
 
 
@@ -101,6 +137,12 @@ def _db_row(path: Path, item_id: str) -> dict:
 def cmd_status_db(db_path: Path) -> int:
     rows = db_store.list_items(db_path)
     print(_status_summary(rows))
+    return 0
+
+
+def cmd_workers_db(db_path: Path) -> int:
+    rows = db_store.list_items(db_path)
+    print(_workers_summary(rows))
     return 0
 
 
@@ -187,6 +229,7 @@ def build_parser() -> argparse.ArgumentParser:
     sub = p.add_subparsers(dest="command", required=True)
 
     sub.add_parser("status", help="Summary by status + top in-progress")
+    sub.add_parser("workers", help="Owner-session(worker) distribution for IN_PROGRESS items")
 
     cancel = sub.add_parser("cancel", help="Cancel an active item (moves to BLOCKED)")
     cancel.add_argument("--id", required=True)
@@ -208,6 +251,8 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "status":
         return cmd_status_db(db_path) if db_path else cmd_status_md(queue_path)
+    if args.command == "workers":
+        return cmd_workers_db(db_path) if db_path else cmd_workers_md(queue_path)
     if args.command == "cancel":
         return cmd_cancel_db(db_path, args.id) if db_path else cmd_cancel_md(queue_path, args.id)
     if args.command == "replan":

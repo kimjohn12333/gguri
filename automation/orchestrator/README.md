@@ -119,6 +119,7 @@ Queue productization 시작을 위해 SQLite 저장소를 추가했습니다. �
 Quickstart:
 - Markdown queue status: `python3 automation/orchestrator/ops.py status`
 - SQLite queue status: `python3 automation/orchestrator/ops.py --db automation/orchestrator/db/queue.db status`
+- Worker allocation view: `python3 automation/orchestrator/ops.py workers`
 - Cancel/Replan/Retry: `cancel --id`, `replan --id --notes`, `retry --id`
 
 ## Reliability Layer (v1)

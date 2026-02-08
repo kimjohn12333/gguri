@@ -56,6 +56,13 @@ class OpsCliTests(unittest.TestCase):
         self.assertIn("summary", out)
         self.assertIn("IN_PROGRESS=1", out)
 
+    def test_workers_output_markdown(self):
+        code, out = self.run_cmd(["--queue", str(self.queue_path), "workers"])
+        self.assertEqual(code, 0)
+        self.assertIn("workers_active=1", out)
+        self.assertIn("s1", out)
+        self.assertIn("ORCH-102", out)
+
     def test_cancel_changes_status_markdown(self):
         code, out = self.run_cmd(["--queue", str(self.queue_path), "cancel", "--id", "ORCH-100"])
         self.assertEqual(code, 0)
@@ -93,6 +100,13 @@ class OpsCliTests(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertIn("summary", out)
         self.assertIn("PENDING=1", out)
+
+    def test_workers_db_mode_smoke(self):
+        self._db_add(id="DB-W1", status="IN_PROGRESS")
+        code, out = self.run_cmd(["--db", str(self.db_path), "workers"])
+        self.assertEqual(code, 0)
+        self.assertIn("workers_active=1", out)
+        self.assertIn("worker-1", out)
 
     def test_retry_db_mode_respects_attempts(self):
         self._db_add(id="DB-R1", status="FAILED")

@@ -53,6 +53,22 @@ start_session() {
 
   # Keep the 2x2 split shape as created above (status/log + queue/control)
   tmux -S "$SOCKET" select-pane -t "$SESSION":0.2
+
+  # Window 1: fleet overview (worker allocation / pending / logs)
+  tmux -S "$SOCKET" new-window -t "$SESSION" -n fleet \
+    "cd '$WORKDIR'; while true; do clear; date; echo '=== WORKER OVERVIEW ==='; python3 -m automation.orchestrator.ops status; sleep 2; done"
+
+  tmux -S "$SOCKET" split-window -h -t "$SESSION":fleet \
+    "cd '$WORKDIR'; while true; do clear; echo '=== WORKER ALLOCATION (owner_session) ==='; python3 -m automation.orchestrator.ops workers; sleep 2; done"
+
+  tmux -S "$SOCKET" split-window -v -t "$SESSION":fleet.0 \
+    "cd '$WORKDIR'; while true; do clear; echo '=== PENDING TOP ==='; python3 -m automation.orchestrator.orch list --status PENDING | head -n 20; sleep 3; done"
+
+  tmux -S "$SOCKET" split-window -v -t "$SESSION":fleet.1 \
+    "cd '$WORKDIR'; while true; do clear; echo '=== RECENT ORCH LOGS ==='; tail -n 60 '$LOG_PATH'; sleep 3; done"
+
+  tmux -S "$SOCKET" select-layout -t "$SESSION":fleet tiled
+  tmux -S "$SOCKET" select-window -t "$SESSION":fleet
 }
 
 case "$ACTION" in

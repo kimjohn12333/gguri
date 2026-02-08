@@ -35,6 +35,28 @@ CLI entrypoint: `python3 automation/orchestrator/ops.py`
 
 ---
 
+## `workers`
+**Purpose**
+- Show worker(owner_session)별 현재 작업 배분 현황.
+- `IN_PROGRESS` 항목을 owner 기준으로 묶어 빠르게 관제.
+
+**Inputs**
+- none (plus optional `--queue` or `--db`)
+
+**Output format**
+- Line 1: `workers_active=<n> in_progress=<m>`
+- Next lines: `- <owner_session> tasks=<k> ids=<id1,id2,...> oldest_start=<time>`
+- 항목이 없으면: `workers: none`
+
+**Safety checks**
+- Read-only command.
+
+**Examples**
+- Markdown: `python3 automation/orchestrator/ops.py workers`
+- SQLite: `python3 automation/orchestrator/ops.py --db automation/orchestrator/db/queue.db workers`
+
+---
+
 ## `cancel --id`
 **Purpose**
 - Stop operator-owned work for an active item.
