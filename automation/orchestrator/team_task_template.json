@@ -1,0 +1,13 @@
+{
+  "id": "ORCH-005-W1",
+  "title": "하위 작업 제목",
+  "owner_role": "worker_a",
+  "status": "PENDING",
+  "dependencies": [],
+  "prompt": "수행할 작업 지시문(간결하게)",
+  "acceptance_criteria": [
+    "검증 가능한 완료 조건 1",
+    "검증 가능한 완료 조건 2"
+  ],
+  "summary_budget_tokens": 500
+}
