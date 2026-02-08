@@ -42,7 +42,7 @@ start_session() {
      echo '=== ORCH CONTROL SHELL ==='; \
      echo '자주 쓰는 명령:'; \
      echo '  python3 -m automation.orchestrator.ops status'; \
-     echo '  python3 -m automation.orchestrator.nl_intake submit --request "로그 정리, 재시도 보강, 문서 업데이트" --parallel 3'; \
+     echo '  python3 -m automation.orchestrator.nl_intake submit --request \"로그 정리, 재시도 보강, 문서 업데이트\" --parallel 3'; \
      echo '  python3 -m automation.orchestrator.orch add --id ORCH-016 --priority P1 --task \"...\" --success-criteria \"...\"'; \
      echo '  python3 -m automation.orchestrator.ops retry --id ORCH-016'; \
      echo '  python3 -m automation.orchestrator.ops cancel --id ORCH-016'; \
@@ -81,7 +81,23 @@ case "$ACTION" in
     echo "Attach: tmux -S '$SOCKET' attach -t '$SESSION'"
     ;;
   attach)
-    tmux -S "$SOCKET" attach -t "$SESSION"
+    start_session
+    if [[ ! -t 1 ]]; then
+      echo "TTY not detected. Run this in your terminal:"
+      echo "TMUX= tmux -S '$SOCKET' attach -t '$SESSION'"
+      exit 0
+    fi
+    TMUX= tmux -S "$SOCKET" attach -t "$SESSION"
+    ;;
+  fleet)
+    start_session
+    tmux -S "$SOCKET" select-window -t "$SESSION":fleet
+    if [[ ! -t 1 ]]; then
+      echo "TTY not detected. Run this in your terminal:"
+      echo "TMUX= tmux -S '$SOCKET' attach -t '$SESSION'"
+      exit 0
+    fi
+    TMUX= tmux -S "$SOCKET" attach -t "$SESSION"
     ;;
   stop)
     tmux -S "$SOCKET" kill-session -t "$SESSION"
@@ -91,7 +107,7 @@ case "$ACTION" in
     tmux -S "$SOCKET" list-sessions || true
     ;;
   *)
-    echo "Usage: $0 {start|attach|stop|status} [--reset]"
+    echo "Usage: $0 {start|attach|fleet|stop|status} [--reset]"
     exit 1
     ;;
 esac

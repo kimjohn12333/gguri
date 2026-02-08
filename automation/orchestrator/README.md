@@ -64,6 +64,18 @@
 - 분해가 어려우면 `설계 -> 구현 -> 검증` 3단계 템플릿으로 생성
 - 생성 row는 `notes`에 `nl_intake:<timestamp>` 태그를 남김
 
+## tmux Dashboard (관제)
+원클릭으로 관제화면(오케스트레이터 + fleet)을 띄웁니다.
+
+- 시작/갱신: `automation/orchestrator/run_dashboard.sh start --reset`
+- 붙기(기본): `automation/orchestrator/run_dashboard.sh attach`
+- 붙기(fleet 창 강제): `automation/orchestrator/run_dashboard.sh fleet`
+- 종료: `automation/orchestrator/run_dashboard.sh stop`
+
+팁:
+- tmux 내부에서 실행 중이어도 `attach/fleet`는 자동으로 중첩 경고를 피하도록 동작합니다.
+- 키 조작: `Ctrl+b` 후 `n`(다음 창), `p`(이전 창), `d`(detach)
+
 ## Team Mode (MVP)
 Lead 1 + Worker 3 구조로 하위 작업을 병렬 처리하는 모드입니다.
 상세 규칙은 `automation/orchestrator/TEAM_MODE.md`를 참고하세요.
