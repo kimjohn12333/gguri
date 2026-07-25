@@ -7,6 +7,8 @@ from pathlib import Path
 from automation.orchestrator import db_store
 
 
+REPO_ROOT = Path(__file__).resolve().parents[3]
+
 SAMPLE_QUEUE = """# Orchestrator Queue
 
 ## Queue
@@ -38,7 +40,7 @@ class CheckConsistencyScriptTests(unittest.TestCase):
         self.tmp.cleanup()
 
     def test_script_health_ok(self):
-        script = "/Users/jm/.openclaw/workspace/automation/orchestrator/check_consistency.sh"
+        script = str(REPO_ROOT / "automation" / "orchestrator" / "check_consistency.sh")
         env = os.environ.copy()
         env.update(
             {
@@ -55,7 +57,7 @@ class CheckConsistencyScriptTests(unittest.TestCase):
             capture_output=True,
             text=True,
             env=env,
-            cwd="/Users/jm/.openclaw/workspace",
+            cwd=str(REPO_ROOT),
         )
         self.assertEqual(cp.returncode, 0)
         self.assertIn("HEALTH_OK", cp.stdout)
